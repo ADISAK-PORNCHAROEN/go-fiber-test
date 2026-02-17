@@ -1,0 +1,107 @@
+definitions:
+  models.Name:
+    properties:
+      fname:
+        type: string
+      id:
+        type: integer
+      lname:
+        type: string
+    type: object
+  models.User:
+    properties:
+      password:
+        example: "1234"
+        type: string
+      username:
+        example: admin
+        type: string
+    type: object
+info:
+  contact: {}
+  description: ระบบทดสอบ API ด้วย Fiber v3
+  title: Fiber Test API
+  version: "1.0"
+paths:
+  /api/v1/names:
+    get:
+      consumes:
+      - application/json
+      description: ดึงข้อมูล Names ทั้งหมดในระบบ (ต้อง Login)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: คืนค่าเป็น Array ของ Name
+          schema:
+            items:
+              $ref: '#/definitions/models.Name'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: ดึงรายชื่อ (Get Names)
+      tags:
+      - names
+  /api/v1/names/{id}:
+    get:
+      consumes:
+      - application/json
+      description: ดึงข้อมูล Name ตาม ID ที่ระบุ (ต้อง Login)
+      parameters:
+      - description: Name ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Name'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: ดึงรายชื่อตาม ID (Get Name By Id)
+      tags:
+      - names
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: ส่ง Username/Password เพื่อรับ JWT Token
+      parameters:
+      - description: ข้อมูล Login
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login
+      tags:
+      - auth
+securityDefinitions:
+  BearerAuth:
+    description: พิมพ์คำว่า "Bearer " ตามด้วย Token (เช่น "Bearer eyJhb...")
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

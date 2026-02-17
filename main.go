@@ -1,15 +1,23 @@
 package main
 
 import (
-	namesService "fiber-test/internal"
 	"log"
-	"os"
+
+	_ "fiber-test/docs"
+	"fiber-test/internal/routes"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
 	"github.com/joho/godotenv"
 )
 
+// @title           Fiber Test API
+// @version         1.0
+// @description     ระบบทดสอบ API ด้วย Fiber v3
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description พิมพ์คำว่า "Bearer " ตามด้วย Token (เช่น "Bearer eyJhb...")
 func main() {
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
@@ -22,20 +30,7 @@ func main() {
 		log.Fatal("Error Loading .env file")
 	}
 
-	secretKey := os.Getenv("SECRET_KEY")
-	println(secretKey)
-
-	namesService.NameList = append(namesService.NameList, namesService.Name{Id: 1, Fname: "Adisak", Lname: "Porncharoen"})
-	namesService.NameList = append(namesService.NameList, namesService.Name{Id: 2, Fname: "Mathawee", Lname: "Pumpuang"})
-
-	app.Get("/", namesService.HelloWorld)
-	app.Get("/Names", namesService.Names)
-	app.Get("/Names/:id", namesService.NamesId)
-	app.Post("/Names", namesService.CreateName)
-	app.Put("/Names/:id", namesService.UpdateName)
-	app.Delete("/Names/:id", namesService.DeleteName)
-
-	app.Post("/upload", namesService.UploadFile)
+	routes.SetupRoutes(app)
 
 	app.Listen(":8080")
 }
